@@ -1,0 +1,305 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium 3D Product - 3D Product Catalog</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .product-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 40px;
+        }
+        
+        .product-gallery {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .product-gallery img {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .product-info {
+            padding: 20px;
+        }
+        
+        .product-title {
+            font-size: 2em;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .product-price {
+            font-size: 2.5em;
+            color: #667eea;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        
+        .product-description {
+            color: #666;
+            line-height: 1.6;
+            margin: 20px 0;
+        }
+        
+        .specs {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .specs h3 {
+            margin-bottom: 15px;
+            color: #667eea;
+        }
+        
+        .spec-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .spec-label {
+            font-weight: bold;
+            color: #555;
+        }
+        
+        .spec-value {
+            color: #333;
+        }
+        
+        .buy-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            border-radius: 50px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            transition: transform 0.3s;
+        }
+        
+        .buy-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102,126,234,0.4);
+        }
+        
+        .ar-view {
+            margin-top: 20px;
+            text-align: center;
+            padding: 20px;
+            background: #f0f0f0;
+            border-radius: 10px;
+        }
+        
+        .badge {
+            display: inline-block;
+            background: #28a745;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8em;
+            margin-right: 10px;
+        }
+        
+        .ratings {
+            color: #ffc107;
+            font-size: 1.2em;
+            margin: 10px 0;
+        }
+        
+        @media (max-width: 768px) {
+            .product-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .feature-badge {
+            display: inline-block;
+            background: #e9ecef;
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin: 5px;
+            font-size: 0.9em;
+        }
+        
+        footer {
+            background: #333;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛍️ 3D AR Product Showcase</h1>
+            <p>Experience products in 3D before you buy - Powered by Structure from Motion</p>
+        </div>
+        
+        <div class="product-grid">
+            <div class="product-gallery">
+                <h3>360° Product View</h3>
+                <img src="Premium_3D_Product_360_view.png" alt="3D Product Model">
+                <div class="ar-view">
+                    <h4>📱 Augmented Reality Preview</h4>
+                    <p>Scan QR code to view in your space</p>
+                    <div style="background: white; padding: 20px; margin-top: 10px;">
+                        <p style="font-family: monospace;">AR Ready - Compatible with all devices</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="product-info">
+                <span class="badge">3D Verified</span>
+                <span class="badge">AR Ready</span>
+                <div class="ratings">
+                    ★★★★☆
+                    <span style="color: #666;"> 4.8 ★ (0 reviews)</span>
+                </div>
+                
+                <h2 class="product-title">Premium 3D Product</h2>
+                
+                <div class="product-price">
+                    $79.99
+                    <span style="font-size: 0.5em; color: #28a745;"> FREE Shipping</span>
+                </div>
+                
+                <div class="product-description">
+                    <p>Experience this Premium 3D Product in stunning 3D detail. Reconstructed using advanced 
+                    Structure from Motion technology, this model captures every detail of the original product.
+                    Perfect for visualizing in your own space before purchase.</p>
+                </div>
+                
+                <div class="specs">
+                    <h3>📋 Product Specifications</h3>
+                    <div class="spec-item">
+                        <span class="spec-label">Dimensions (W x H x D):</span>
+                        <span class="spec-value">72.3 × 72.3 × 283.3 cm</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="spec-label">Volume:</span>
+                        <span class="spec-value">1480.94 cm³</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="spec-label">Detail Level:</span>
+                        <span class="spec-value">Standard</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="spec-label">3D Points:</span>
+                        <span class="spec-value">160</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="spec-label">Estimated Weight:</span>
+                        <span class="spec-value">740 g</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="spec-label">SKU:</span>
+                        <span class="spec-value">3D-SFM-001</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="spec-label">Availability:</span>
+                        <span class="spec-value" style="color: #28a745;">In Stock</span>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4>🎨 Available Options</h4>
+                    <span class="feature-badge">Original</span>
+                    <span class="feature-badge">One Size</span>
+                </div>
+                
+                <button class="buy-button" onclick="alert('Added to cart! This is a demo.')">
+                    🛒 Add to Cart - $79.99
+                </button>
+                
+                <div style="margin-top: 20px; text-align: center; font-size: 0.9em; color: #666;">
+                    <p>✅ Free Returns | ✅ 3D Verified | ✅ AR Compatible</p>
+                </div>
+            </div>
+        </div>
+        
+        <div style="padding: 40px; background: #f8f9fa;">
+            <h3 style="text-align: center; margin-bottom: 30px;">✨ Key Features</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                <div style="text-align: center;">
+                    <div style="font-size: 3em;">🔍</div>
+                    <h4>3D Detail View</h4>
+                    <p>Rotate and zoom to inspect every angle</p>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 3em;">📱</div>
+                    <h4>AR Preview</h4>
+                    <p>See in your room before buying</p>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 3em;">📏</div>
+                    <h4>Accurate Dimensions</h4>
+                    <p>Real-world measurements from 3D scan</p>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 3em;">🎨</div>
+                    <h4>True Colors</h4>
+                    <p>Accurate color representation</p>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>© 2024 3D AR E-commerce Platform | Powered by Structure from Motion Technology</p>
+            <p style="font-size: 0.8em; margin-top: 10px;">Experience the future of online shopping</p>
+        </footer>
+    </div>
+</body>
+</html>

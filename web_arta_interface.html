@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>ARTA - Future Shopping Experience</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow: hidden;
+        }
+        
+        #container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+        
+        #camera-feed {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+        }
+        
+        .info-panel {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            pointer-events: auto;
+            font-size: 14px;
+        }
+        
+        .gesture-guide {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            font-size: 12px;
+            text-align: right;
+        }
+        
+        .ai-suggestions {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            max-width: 300px;
+            font-size: 12px;
+        }
+        
+        .product-3d {
+            position: absolute;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 300px;
+            height: 300px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            display: none;
+            pointer-events: auto;
+        }
+        
+        .qr-code {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: white;
+            padding: 10px;
+            border-radius: 10px;
+            width: 100px;
+            height: 100px;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+        
+        .gesture-indicator {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: rgba(0,255,0,0.5);
+            pointer-events: none;
+            animation: pulse 0.5s ease-out;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            pointer-events: auto;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+        }
+        
+        @media (max-width: 768px) {
+            .info-panel, .gesture-guide, .ai-suggestions {
+                font-size: 10px;
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <video id="camera-feed" autoplay playsinline></video>
+        
+        <div class="overlay">
+            <div class="info-panel" id="infoPanel">
+                <strong>🤖 ARTA Assistant Active</strong><br>
+                Product: <span id="productName">Loading...</span><br>
+                Blockchain: <span id="blockchainHash">Verified</span>
+            </div>
+            
+            <div class="gesture-guide">
+                <strong>✋ Gesture Guide</strong><br>
+                Open Palm → Product Info<br>
+                Point Finger → Rotate 3D<br>
+                Victory Sign → Place in AR<br>
+                Fist → Remove<br>
+                Wave → AI Suggestions
+            </div>
+            
+            <div class="ai-suggestions" id="aiSuggestions" style="display: none;">
+                <strong>🤖 AI Suggestions</strong><br>
+                <div id="suggestionsList"></div>
+                <button onclick="closeSuggestions()">Close</button>
+            </div>
+            
+            <div class="product-3d" id="product3D">
+                <canvas id="productCanvas"></canvas>
+            </div>
+            
+            <div class="qr-code" id="qrCode" style="display: none;">
+                <img id="qrImage" src="" alt="AR QR Code">
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Camera setup
+        const video = document.getElementById('camera-feed');
+        
+        async function setupCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+                console.log('📷 Camera ready');
+            } catch (err) {
+                console.error('Camera error:', err);
+                document.getElementById('infoPanel').innerHTML += '<br>⚠️ Camera access required';
+            }
+        }
+        
+        // Gesture detection simulation (would use MediaPipe in production)
+        let lastGesture = '';
+        let gestureTimeout = null;
+        
+        function simulateGesture(gesture) {
+            if (gesture === lastGesture) return;
+            lastGesture = gesture;
+            
+            // Clear timeout
+            if (gestureTimeout) clearTimeout(gestureTimeout);
+            
+            // Show gesture indicator
+            showGestureIndicator(gesture);
+            
+            // Execute gesture action
+            executeGestureAction(gesture);
+            
+            // Reset after 2 seconds
+            gestureTimeout = setTimeout(() => {
+                lastGesture = '';
+            }, 2000);
+        }
+        
+        function showGestureIndicator(gesture) {
+            const indicator = document.createElement('div');
+            indicator.className = 'gesture-indicator';
+            indicator.style.left = '50%';
+            indicator.style.top = '50%';
+            indicator.style.transform = 'translate(-50%, -50%)';
+            indicator.style.position = 'absolute';
+            indicator.innerHTML = `<div style="text-align: center; margin-top: 40px;">${getGestureIcon(gesture)}</div>`;
+            document.body.appendChild(indicator);
+            
+            setTimeout(() => {
+                indicator.remove();
+            }, 500);
+        }
+        
+        function getGestureIcon(gesture) {
+            const icons = {
+                'open_palm': '🖐️',
+                'point': '👉',
+                'victory': '✌️',
+                'fist': '👊',
+                'wave': '👋'
+            };
+            return icons[gesture] || '✋';
+        }
+        
+        function executeGestureAction(gesture) {
+            const infoPanel = document.getElementById('infoPanel');
+            const aiSuggestions = document.getElementById('aiSuggestions');
+            const product3D = document.getElementById('product3D');
+            
+            switch(gesture) {
+                case 'open_palm':
+                    infoPanel.style.backgroundColor = 'rgba(0,0,0,0.9)';
+                    infoPanel.innerHTML = `
+                        <strong>📦 Product Details</strong><br>
+                        Name: Interactive 3D Product<br>
+                        Dimensions: 25 × 18 × 12 cm<br>
+                        Material: Premium Quality<br>
+                        Blockchain: ✓ Verified<br>
+                        NFT Ready: ✓
+                    `;
+                    setTimeout(() => {
+                        infoPanel.style.backgroundColor = 'rgba(0,0,0,0.8)';
+                        infoPanel.innerHTML = `
+                            <strong>🤖 ARTA Assistant Active</strong><br>
+                            Product: Interactive 3D Product<br>
+                            Blockchain: Verified
+                        `;
+                    }, 3000);
+                    break;
+                    
+                case 'point':
+                    product3D.style.display = 'block';
+                    setTimeout(() => {
+                        product3D.style.display = 'none';
+                    }, 2000);
+                    break;
+                    
+                case 'victory':
+                    showARPlacement();
+                    break;
+                    
+                case 'fist':
+                    product3D.style.display = 'none';
+                    break;
+                    
+                case 'wave':
+                    showAISuggestions();
+                    break;
+            }
+        }
+        
+        function showARPlacement() {
+            const infoPanel = document.getElementById('infoPanel');
+            infoPanel.innerHTML = `
+                <strong>📍 AR Placement Mode</strong><br>
+                Point camera at a flat surface<br>
+                Product will appear in 3 seconds
+            `;
+            
+            setTimeout(() => {
+                infoPanel.innerHTML = `
+                    <strong>✨ Product Placed!</strong><br>
+                    Position adjusted to your room<br>
+                    Take a screenshot to save
+                `;
+                
+                // Show QR code for sharing
+                const qrCode = document.getElementById('qrCode');
+                qrCode.style.display = 'block';
+                
+                setTimeout(() => {
+                    infoPanel.innerHTML = `
+                        <strong>🤖 ARTA Assistant Active</strong><br>
+                        Product: Interactive 3D Product<br>
+                        Blockchain: Verified
+                    `;
+                }, 3000);
+            }, 3000);
+        }
+        
+        function showAISuggestions() {
+            const suggestions = [
+                "✨ This product would look great in natural lighting",
+                "🎨 Available in 5 colors - custom option available",
+                "📐 Fits perfectly on most desks (based on your room size)",
+                "💡 89% of users prefer this with matte finish",
+                "🔗 Limited edition - blockchain verified ownership"
+            ];
+            
+            const randomSuggestion = suggestions[Math.floor(Math.random() * suggestions.length)];
+            const suggestionsDiv = document.getElementById('suggestionsList');
+            suggestionsDiv.innerHTML = `<div style="margin: 10px 0;">${randomSuggestion}</div>`;
+            
+            const aiPanel = document.getElementById('aiSuggestions');
+            aiPanel.style.display = 'block';
+        }
+        
+        function closeSuggestions() {
+            document.getElementById('aiSuggestions').style.display = 'none';
+        }
+        
+        // Demo: Simulate gesture detection
+        let gestureIndex = 0;
+        const gestures = ['open_palm', 'point', 'victory', 'wave', 'fist'];
+        
+        function demoGestures() {
+            setInterval(() => {
+                if (Math.random() > 0.7) {  // Random demo gestures
+                    const gesture = gestures[Math.floor(Math.random() * gestures.length)];
+                    simulateGesture(gesture);
+                }
+            }, 5000);
+        }
+        
+        // Initialize
+        setupCamera();
+        demoGestures();
+        
+        // Product info update
+        document.getElementById('productName').innerText = 'Interactive 3D Product';
+        
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case 'i':
+                    simulateGesture('open_palm');
+                    break;
+                case 'r':
+                    simulateGesture('point');
+                    break;
+                case 'p':
+                    simulateGesture('victory');
+                    break;
+                case 'd':
+                    simulateGesture('fist');
+                    break;
+                case 's':
+                    simulateGesture('wave');
+                    break;
+            }
+        });
+        
+        console.log('🎯 ARTA Web Interface Ready');
+        console.log('   Gesture Demo Active | Keyboard: I/R/P/D/S');
+    </script>
+</body>
+</html>

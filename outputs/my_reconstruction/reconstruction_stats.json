@@ -1,0 +1,6 @@
+{
+  "num_images": 12,
+  "num_cameras": 12,
+  "num_points_3d": 160,
+  "reconstruction_complete": true
+}
